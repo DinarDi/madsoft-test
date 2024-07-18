@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  app:
+    container_name: app-container
+    build:
+      context: ./app_service
+    depends_on:
+      - postgres
+      - media
+    volumes:
+      - ./app_service:/app_service
+    ports:
+      - '8000:8000'
+    env_file:
+      - ./app_service/.env.app
+    command: >
+      sh -c 'uvicorn main:memes_app --reload --host=0.0.0.0 --port=8000'
+    networks:
+      - local
+
+  media:
+    container_name: media-container
+    build:
+      context: ./media_service
+    depends_on:
+      - s3service
+    volumes:
+      - ./media_service:/media_service
+    env_file:
+      - ./media_service/.env.app
+    command: >
+      sh -c 'uvicorn main:media_app --reload --host=0.0.0.0 --port=8001'
+    networks:
+      - local
+
+  postgres:
+    container_name: database
+    image: postgres:16.3-alpine3.20
+    ports:
+      - '5432:5432'
+    volumes:
+      - .postgres:/var/lib/postgres/data
+    env_file:
+      - ./.env.pg
+    networks:
+      - local
+
+  s3service:
+    container_name: minio-container
+    image: bitnami/minio:2024.6.26
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    env_file:
+      - ./.env.minio
+    networks:
+      - local
+
+networks:
+  local:
