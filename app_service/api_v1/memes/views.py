@@ -34,6 +34,8 @@ memes_router = APIRouter(
     tags=['Memes'],
 )
 
+file_types = ('jpg', 'png')
+
 
 @memes_router.get(
     '/',
@@ -114,6 +116,13 @@ async def create_meme(
         file: UploadFile,
         session: AsyncSession = Depends(db_manager.get_session),
 ):
+    if file.filename.split('.')[-1] not in file_types:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                'error_message': 'File type must be jpg or png'
+            }
+        )
     try:
         meme = await meme_crud.create_meme(
             session=session,
@@ -149,6 +158,13 @@ async def update_meme(
         file: Annotated[UploadFile, File] = File(None),
         session: AsyncSession = Depends(db_manager.get_session)
 ):
+    if file and file.filename.split('.')[-1] not in file_types:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail={
+                'error_message': 'File type must be jpg or png'
+            }
+        )
     try:
         meme = await meme_crud.update_meme(
             session=session,

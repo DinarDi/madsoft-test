@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import (
     AsyncSession,
     create_async_engine
 )
+from .models.base import Base
 
 
 class DatabaseManager:
@@ -59,6 +60,15 @@ class DatabaseManager:
         """
         async with self.session() as session:
             yield session
+
+    async def create_table(self):
+        async with self._engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+
+    async def drop_table(self):
+        async with self._engine.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+        await self._engine.dispose()
 
 
 db_manager = DatabaseManager()

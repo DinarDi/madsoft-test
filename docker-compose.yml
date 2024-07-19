@@ -46,6 +46,16 @@ services:
     networks:
       - local
 
+  testdb:
+    container_name: database-test
+    image: postgres:16.3-alpine3.20
+    ports:
+      - '5433:5432'
+    env_file:
+      - ./.env.test
+    networks:
+      - local
+
   s3service:
     container_name: minio-container
     image: bitnami/minio:2024.6.26

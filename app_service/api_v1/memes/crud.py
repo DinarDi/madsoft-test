@@ -81,7 +81,7 @@ async def create_meme(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={
-                'data': 'Something went wrong'
+                'error_message': 'Something went wrong'
             },
         )
     meme.img_url = res.json()['img_link']
@@ -123,7 +123,7 @@ async def update_meme(
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail={
-                    'data': 'Something went wrong'
+                    'error_message': 'Something went wrong'
                 },
             )
         meme.img_url = result.json()['img_link']
@@ -148,7 +148,7 @@ async def delete_meme(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={
-                'data': 'Something went wrong'
+                'error_message': 'Something went wrong'
             },
         )
 
